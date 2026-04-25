@@ -59,10 +59,10 @@ export function BlocksTab({ nodes = [], onSelect }: Props) {
   return (
     <div>
       <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <StatPill label="⛏ Total Blocks" value={stats.total.toLocaleString()} />
-        <StatPill label="🥇 Top Miner" value={stats.topName} sub={`${stats.topBlocks.toLocaleString()} blocks`} small tone="warning" />
-        <StatPill label="⚡ Best Energy" value={stats.bestE ? stats.bestE.toLocaleString() : "—"} sub="lowest = best proof" tone="success" small />
-        <StatPill label="👥 Unique Miners" value={stats.miners.toLocaleString()} tone="info" />
+        <StatPill label="Total Blocks" value={stats.total.toLocaleString()} />
+        <StatPill label="Top Miner" value={stats.topName} sub={`${stats.topBlocks.toLocaleString()} blocks`} small tone="warning" />
+        <StatPill label="Best Energy" value={stats.bestE ? stats.bestE.toLocaleString() : "—"} sub="lowest = best proof" tone="success" small />
+        <StatPill label="Unique Miners" value={stats.miners.toLocaleString()} tone="info" />
       </div>
 
       <div className="grid gap-4 lg:grid-cols-[1fr_360px]">
