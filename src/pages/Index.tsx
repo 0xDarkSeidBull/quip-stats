@@ -74,6 +74,7 @@ export default function Index() {
         case "offline": return !n.active;
         case "gpu": return n.active && n.type === "GPU";
         case "cpu": return n.active && n.type === "CPU";
+        case "qpu": return n.active && n.type === "QPU";
         default: return true;
       }
     });
