@@ -76,16 +76,21 @@ export function BlocksTab({ nodes = [], onSelect }: Props) {
               {lb.map((m, i) => {
                 const sm = shortMiner(m.miner_id || "");
                 const pct = Math.round((m.blocks / maxBlocks) * 100);
+                const matchedNode = onSelect && nodes.length
+                  ? nodes.find((n) => sm.display && n.name.toLowerCase().includes(sm.display.toLowerCase()))
+                  : undefined;
                 return (
                   <TiltRow
                     key={m.miner_id + i}
+                    as={matchedNode ? "button" : "div"}
+                    onClick={matchedNode ? () => onSelect?.(matchedNode) : undefined}
                     tilt={4}
                     scale={1.01}
                     spotlight
-                    className="grid grid-cols-[40px_minmax(0,1fr)_70px_110px_120px] items-center gap-3 border-b border-border/60 px-4 py-3 last:border-b-0 hover:bg-accent/30"
+                    className={`grid w-full grid-cols-[40px_minmax(0,1fr)_70px_110px_120px] items-center gap-3 border-b border-border/60 px-4 py-3 text-left last:border-b-0 hover:bg-accent/30 ${matchedNode ? "cursor-pointer" : ""}`}
                   >
                     <div className={`text-center text-[13px] font-semibold ${i < 3 ? RANK_COLOR[i] : "text-muted-foreground"}`}>
-                      {i < 3 ? RANK_EMOJI[i] : i + 1}
+                      {i + 1}
                     </div>
                     <div className="min-w-0">
                       <div className="truncate font-mono text-[12.5px] font-semibold text-foreground" title={m.miner_id}>{sm.display || "Unknown"}</div>
