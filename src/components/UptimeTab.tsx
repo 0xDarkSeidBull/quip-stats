@@ -23,7 +23,7 @@ function fmtUptime(hrs: number) {
   return `${(Math.round(hrs * 10) / 10)}h`;
 }
 
-export function UptimeTab({ nodes }: Props) {
+export function UptimeTab({ nodes, onSelect }: Props) {
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<Filter>("all");
 
