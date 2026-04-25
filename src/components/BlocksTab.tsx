@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { TiltRow } from "@/components/TiltRow";
-import { fetchBlocks, type BlocksResponse, timeAgo } from "@/lib/quipstats-api";
+import { fetchBlocks, type BlocksResponse, type QuipNode, timeAgo } from "@/lib/quipstats-api";
 
 function shortMiner(id: string) {
   const w = id.match(/(0x[a-fA-F0-9]{40})/);
@@ -9,10 +9,11 @@ function shortMiner(id: string) {
   return { display, walletShort: wallet ? `${wallet.slice(0, 6)}…${wallet.slice(-4)}` : "" };
 }
 
-const RANK_EMOJI = ["🥇", "🥈", "🥉"];
 const RANK_COLOR = ["text-warning", "text-muted-foreground", "text-info"];
 
-export function BlocksTab() {
+interface Props { nodes?: QuipNode[]; onSelect?: (n: QuipNode) => void; }
+
+export function BlocksTab({ nodes = [], onSelect }: Props) {
   const [data, setData] = useState<BlocksResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
 
