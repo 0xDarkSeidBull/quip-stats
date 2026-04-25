@@ -139,10 +139,10 @@ export function BlocksTab({ nodes = [], onSelect }: Props) {
                     </div>
                     <div className="mt-0.5 truncate font-mono text-[11.5px]" title={mid}>{display}</div>
                     <div className="mt-1.5 flex flex-wrap gap-x-3 gap-y-1 text-[10px] text-muted-foreground">
-                      <span>⚡ <span className="text-success font-semibold">{energy}</span></span>
-                      <span>🌈 <span className="text-foreground font-semibold">{div}</span></span>
-                      <span>✅ <span className="text-foreground font-semibold">{sols} sol</span></span>
-                      {mt != null && <span>⏱ <span className="text-foreground font-semibold">{mt}s</span></span>}
+                      <span>Energy <span className="text-success font-semibold">{energy}</span></span>
+                      <span>Diversity <span className="text-foreground font-semibold">{div}</span></span>
+                      <span><span className="text-foreground font-semibold">{sols}</span> sol</span>
+                      {mt != null && <span><span className="text-foreground font-semibold">{mt}s</span></span>}
                     </div>
                   </TiltRow>
                 );
