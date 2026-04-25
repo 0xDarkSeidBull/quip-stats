@@ -5,7 +5,7 @@ import { maskName } from "@/lib/quipstats-api";
 import { cn } from "@/lib/utils";
 import { Search } from "lucide-react";
 
-interface Props { nodes: QuipNode[]; }
+interface Props { nodes: QuipNode[]; onSelect?: (n: QuipNode) => void; }
 type Filter = "all" | "active" | "24h" | "7d";
 
 const filters: { id: Filter; label: string }[] = [
