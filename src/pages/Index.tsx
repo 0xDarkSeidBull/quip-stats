@@ -34,7 +34,7 @@ const tabs: { id: Tab; label: string }[] = [
 const PER_PAGE = 50;
 
 export default function Index() {
-  const { nodes, fresh, loading, error, updatedAt, fromCache } = useQuipNodes();
+  const { nodes, fresh, loading, error, updatedAt, fromCache, totalSeen } = useQuipNodes();
   const [tab, setTab] = useState<Tab>("nodes");
   const [filter, setFilter] = useState<Filter>("all");
   const [query, setQuery] = useState("");
