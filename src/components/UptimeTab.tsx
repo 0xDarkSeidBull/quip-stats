@@ -95,10 +95,12 @@ export function UptimeTab({ nodes, onSelect }: Props) {
             return (
               <TiltRow
                 key={n.uid + i}
+                as={onSelect ? "button" : "div"}
+                onClick={onSelect ? () => onSelect(n) : undefined}
                 tilt={4}
                 scale={1.01}
                 spotlight
-                className="grid grid-cols-[40px_minmax(0,1fr)_70px_minmax(0,1fr)_110px_70px] items-center gap-3 border-b border-border/60 px-4 py-3 last:border-b-0 hover:bg-accent/30"
+                className={cn("grid w-full grid-cols-[40px_minmax(0,1fr)_70px_minmax(0,1fr)_110px_70px] items-center gap-3 border-b border-border/60 px-4 py-3 text-left last:border-b-0 hover:bg-accent/30", onSelect && "cursor-pointer")}
               >
                 <div className={`text-center text-[12px] font-semibold ${i < 3 ? RANK_COLOR[i] : "text-muted-foreground"}`}>{i + 1}</div>
                 <div className="truncate font-mono text-[12.5px] font-semibold" title={n.name}>{maskName(n.name)}</div>
