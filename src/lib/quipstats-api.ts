@@ -137,3 +137,97 @@ export function formatResource(n: QuipNode): string {
   if (n.type === "QPU") return "QPU";
   return n.cpus > 0 ? `${n.cpus} cores` : "—";
 }
+
+// ── Blocks API ──
+export interface BlockMiner {
+  miner_id: string;
+  blocks: number;
+  avg_energy?: number;
+  best_energy?: number;
+}
+export interface RecentBlock {
+  block_index?: number;
+  index?: number;
+  miner?: { miner_id?: string };
+  quantum_proof?: {
+    energy?: number;
+    diversity?: number;
+    num_solutions?: number;
+    solutions?: number;
+    mining_time_secs?: number;
+    mining_time?: number;
+  };
+  timestamp?: number;
+}
+export interface BlocksResponse {
+  total_blocks?: number;
+  leaderboard?: BlockMiner[];
+  recent_blocks?: RecentBlock[];
+}
+
+const BLOCKS_API = "https://api.republicstats.xyz/api/quip/telemetry/blocks";
+
+export async function fetchBlocks(): Promise<BlocksResponse> {
+  const res = await fetch(BLOCKS_API);
+  if (!res.ok) throw new Error(`Blocks API ${res.status}`);
+  return res.json();
+}
+
+// ── Geo IP (ip-api.com batch) ──
+export interface GeoResult {
+  status: string;
+  query: string;
+  country?: string;
+  countryCode?: string;
+  city?: string;
+  lat?: number;
+  lon?: number;
+}
+export async function geoBatch(ips: string[]): Promise<GeoResult[]> {
+  // ip-api batch limit 100/req
+  const out: GeoResult[] = [];
+  for (let i = 0; i < ips.length; i += 100) {
+    const batch = ips.slice(i, i + 100);
+    try {
+      const res = await fetch("https://ip-api.com/batch?fields=status,country,countryCode,city,lat,lon,query", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(batch.map((q) => ({ query: q }))),
+      });
+      if (!res.ok) continue;
+      const data = (await res.json()) as GeoResult[];
+      out.push(...data);
+    } catch { /* ignore */ }
+    // be polite to free tier
+    await new Promise((r) => setTimeout(r, 120));
+  }
+  return out;
+}
+
+export async function fetchMyIP(): Promise<string | null> {
+  try {
+    const r = await fetch("https://api.ipify.org?format=json");
+    const j = await r.json();
+    return j.ip || null;
+  } catch { return null; }
+}
+
+export function getFlagEmoji(cc?: string): string {
+  if (!cc || cc.length !== 2) return "🌐";
+  return String.fromCodePoint(...cc.toUpperCase().split("").map((c) => 127397 + c.charCodeAt(0)));
+}
+
+export function isPublicIP(ip: string): boolean {
+  if (!/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(ip)) return false;
+  if (/^(10\.|172\.(1[6-9]|2\d|3[01])\.|192\.168\.|127\.|0\.)/.test(ip)) return false;
+  return true;
+}
+
+export function timeAgo(secs: number): string {
+  if (secs < 0) return "";
+  if (secs < 60) return Math.round(secs) + "s ago";
+  if (secs < 3600) return Math.round(secs / 60) + "m ago";
+  if (secs < 86400) return Math.round(secs / 3600) + "h ago";
+  return Math.round(secs / 86400) + "d ago";
+}
+

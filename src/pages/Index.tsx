@@ -3,13 +3,17 @@ import { StatCard } from "@/components/StatCard";
 import { NodeDetailModal } from "@/components/NodeDetailModal";
 import { AnalyticsTab } from "@/components/AnalyticsTab";
 import { SybilTab } from "@/components/SybilTab";
+import { BlocksTab } from "@/components/BlocksTab";
+import { UptimeTab } from "@/components/UptimeTab";
+import { MapTab } from "@/components/MapTab";
+import { TiltRow } from "@/components/TiltRow";
 import { useQuipNodes } from "@/hooks/use-quip-nodes";
 import { formatResource, maskIP, maskName, type QuipNode } from "@/lib/quipstats-api";
 import { cn } from "@/lib/utils";
 import { Search } from "lucide-react";
 
 type Filter = "all" | "active" | "gpu" | "cpu" | "offline";
-type Tab = "nodes" | "analytics" | "sybil";
+type Tab = "nodes" | "analytics" | "blocks" | "uptime" | "map" | "sybil";
 
 const filters: { id: Filter; label: string }[] = [
   { id: "all", label: "All" },
@@ -20,9 +24,12 @@ const filters: { id: Filter; label: string }[] = [
 ];
 
 const tabs: { id: Tab; label: string }[] = [
-  { id: "nodes", label: "Live Nodes" },
-  { id: "analytics", label: "Analytics" },
-  { id: "sybil", label: "Sybil Detector" },
+  { id: "nodes", label: "🖥 Live Nodes" },
+  { id: "analytics", label: "📊 Analytics" },
+  { id: "blocks", label: "🏆 Block Leaderboard" },
+  { id: "uptime", label: "⏱ Uptime" },
+  { id: "map", label: "🗺 Node Map" },
+  { id: "sybil", label: "🚨 Sybil Detector" },
 ];
 
 const PER_PAGE = 50;
@@ -194,8 +201,12 @@ export default function Index() {
                 <div className="px-5 py-12 text-center text-sm text-muted-foreground">No nodes match your filters.</div>
               ) : (
                 pageRows.map((n, i) => (
-                  <button
+                  <TiltRow
                     key={n.uid}
+                    as="button"
+                    tilt={4}
+                    scale={1.01}
+                    spotlight
                     onClick={() => setSelected(n)}
                     className="group grid w-full grid-cols-[40px_minmax(0,1fr)_70px_110px_90px_180px] items-center gap-3 border-b border-border/60 px-5 py-3 text-left transition-colors last:border-b-0 hover:bg-accent/40"
                   >
@@ -219,7 +230,7 @@ export default function Index() {
                       <span className="text-[11px] text-muted-foreground">{n.active ? "online" : "offline"}</span>
                     </div>
                     <div className="truncate text-right font-mono text-[11.5px] text-muted-foreground">{maskIP(n.ip)}</div>
-                  </button>
+                  </TiltRow>
                 ))
               )}
             </div>
@@ -247,6 +258,9 @@ export default function Index() {
         )}
 
         {tab === "analytics" && <AnalyticsTab nodes={nodes} />}
+        {tab === "blocks" && <BlocksTab />}
+        {tab === "uptime" && <UptimeTab nodes={nodes} />}
+        {tab === "map" && <MapTab nodes={nodes} />}
         {tab === "sybil" && <SybilTab nodes={nodes} />}
       </main>
 

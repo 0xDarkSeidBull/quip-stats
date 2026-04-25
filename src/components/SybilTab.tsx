@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
-import { ChevronDown, Copy, Download, Search } from "lucide-react";
+import { ChevronDown, Copy, Download, Search, ShieldAlert } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { TiltRow } from "@/components/TiltRow";
 import type { QuipNode } from "@/lib/quipstats-api";
 import { extractWallet, maskIP, maskName } from "@/lib/quipstats-api";
 
@@ -18,20 +19,20 @@ const filters = [
 type SortKey = "count-desc" | "count-asc" | "wallets-desc";
 
 function threatLevel(n: number) {
-  if (n >= 50) return { label: "Critical", tone: "bg-destructive/15 text-destructive border-destructive/40", bar: "border-l-destructive" };
-  if (n >= 10) return { label: "High", tone: "bg-warning/15 text-warning border-warning/40", bar: "border-l-warning" };
-  return { label: "Medium", tone: "bg-info/15 text-info border-info/40", bar: "border-l-info" };
+  if (n >= 50) return { label: "Critical", chip: "border-warning/30 bg-warning/10 text-warning", bar: "border-l-warning" };
+  if (n >= 10) return { label: "High",     chip: "border-info/30 bg-info/10 text-info",          bar: "border-l-info" };
+  return        { label: "Medium",   chip: "border-border bg-muted/40 text-muted-foreground",   bar: "border-l-border" };
 }
 
 function StatChip({
   label, value, tone,
-}: { label: string; value: string | number; tone?: "default" | "destructive" | "warning" | "info" | "success" }) {
+}: { label: string; value: string | number; tone?: "default" | "warning" | "info" | "success" | "muted" }) {
   const toneClass: Record<string, string> = {
     default: "text-foreground",
-    destructive: "text-destructive",
     warning: "text-warning",
     info: "text-info",
     success: "text-success",
+    muted: "text-muted-foreground",
   };
   return (
     <div className="rounded-lg border border-border bg-surface px-5 py-4">
@@ -121,9 +122,10 @@ export function SybilTab({ nodes }: Props) {
   return (
     <div>
       {top && (
-        <div className="mb-6 flex flex-wrap items-center gap-4 rounded-xl border border-destructive/30 border-l-4 border-l-destructive bg-destructive/5 px-5 py-4">
+        <div className="mb-6 flex flex-wrap items-center gap-4 rounded-xl border border-warning/25 border-l-2 border-l-warning bg-warning/[0.04] px-5 py-4">
+          <ShieldAlert className="h-5 w-5 flex-shrink-0 text-warning" />
           <div className="flex-1 min-w-[220px]">
-            <div className="text-[13px] font-semibold text-destructive">
+            <div className="text-[13px] font-semibold text-foreground">
               {stats.dupeIPs} IPs running multiple nodes
             </div>
             <div className="mt-1 text-[11px] text-muted-foreground">
@@ -135,11 +137,11 @@ export function SybilTab({ nodes }: Props) {
       )}
 
       <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-        <StatChip label="Duplicate IPs" value={stats.dupeIPs} tone="destructive" />
+        <StatChip label="Duplicate IPs" value={stats.dupeIPs} tone="warning" />
         <StatChip label="Extra Nodes" value={stats.extra.toLocaleString()} tone="warning" />
         <StatChip label="Total Nodes" value={stats.total.toLocaleString()} tone="info" />
         <StatChip label="Unique IPs" value={stats.unique.toLocaleString()} tone="success" />
-        <StatChip label="Sybil Rate" value={`${stats.rate}%`} tone="warning" />
+        <StatChip label="Sybil Rate" value={`${stats.rate}%`} tone="muted" />
       </div>
 
       <div className="mb-4 flex flex-wrap items-center gap-2">
@@ -201,24 +203,28 @@ export function SybilTab({ nodes }: Props) {
             const t = threatLevel(d.nodes.length);
             const open = openIdx === i;
             return (
-              <div key={d.ip} className={cn("overflow-hidden rounded-xl border border-border bg-surface border-l-4", t.bar)}>
-                <button
+              <div key={d.ip} className={cn("overflow-hidden rounded-xl border border-border bg-surface border-l-2", t.bar)}>
+                <TiltRow
+                  as="button"
+                  tilt={3}
+                  scale={1.005}
+                  spotlight
                   onClick={() => setOpenIdx(open ? null : i)}
                   className="flex w-full flex-wrap items-center gap-4 px-5 py-4 text-left transition-colors hover:bg-accent/30"
                 >
-                  <span className={cn("rounded border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider", t.tone)}>
+                  <span className={cn("rounded border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider", t.chip)}>
                     {t.label}
                   </span>
                   <span className="flex-1 truncate font-mono text-[13px] text-foreground">{maskIP(d.ip)}</span>
                   <span className="flex items-baseline gap-1.5">
-                    <span className="font-mono text-xl font-semibold text-destructive">{d.nodes.length}</span>
+                    <span className="font-mono text-xl font-semibold text-foreground">{d.nodes.length}</span>
                     <span className="text-[10px] uppercase tracking-wider text-muted-foreground">nodes</span>
                   </span>
                   <span className="text-[11px] text-muted-foreground">
                     <span className="font-mono text-info">{d.walletCount}</span> wallet{d.walletCount !== 1 ? "s" : ""}
                   </span>
                   <ChevronDown className={cn("h-4 w-4 text-muted-foreground transition-transform", open && "rotate-180")} />
-                </button>
+                </TiltRow>
                 {open && (
                   <div className="border-t border-border bg-background/40 px-5 py-4">
                     <div className="overflow-x-auto">
