@@ -55,7 +55,7 @@ export default function Index() {
     });
     return {
       live: fresh.length || nodes.length,
-      everSeen: nodes.length,
+      everSeen: totalSeen || nodes.length,
       activeNow: active,
       cpuActive: cpu,
       gpuActive: gpu,
@@ -63,7 +63,7 @@ export default function Index() {
       versionMismatch: mismatch,
       lost,
     };
-  }, [nodes, fresh]);
+  }, [nodes, fresh, totalSeen]);
 
   const filtered = useMemo(() => {
     const q = query.toLowerCase().trim();
